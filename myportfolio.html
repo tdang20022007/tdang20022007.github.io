@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGITAL PORTFOLIO - Sinh Viên CNTT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Space Grotesk & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. CẤU HÌNH BIẾN & THIẾT LẬP CHUNG
+           ========================================================================== */
+        :root {
+            --bg-dark: #050816;
+            --neon-blue: #00D4FF;
+            --electric-blue: #3B82F6;
+            --purple-accent: #8B5CF6;
+            --text-white: #F8FAFC;
+            --text-gray: #94A3B8;
+            --glass-bg: rgba(13, 20, 48, 0.4);
+            --glass-border: rgba(59, 130, 246, 0.2);
+            --glass-glow: rgba(0, 212, 255, 0.15);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, .logo, .nav-link, .btn {
+            font-family: var(--font-display);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Thanh cuộn tùy chỉnh */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-blue);
+        }
+
+        /* ==========================================================================
+           2. CƠ CHẾ ROUTING: 3 TRANG RIÊNG BIỆT (SPA PAGES)
+           ========================================================================== */
+        .page {
+            display: none; /* Mặc định ẩn tất cả các trang */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .page.active {
+            display: block; /* Chỉ hiển thị trang có class active */
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           3. HIỆU ỨNG NỀN ĐỘNG (BACKGROUND & GRID)
+           ========================================================================== */
+        .bg-grid-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .cyber-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: gridMove 25s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            z-index: -1;
+            pointer-events: none;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        .orb-1 { width: 400px; height: 400px; background: var(--purple-accent); top: 10%; left: 10%; }
+        .orb-2 { width: 500px; height: 500px; background: var(--electric-blue); bottom: 20%; right: 5%; animation-delay: -3s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--neon-blue); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -6s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, -40px) scale(1.15); }
+        }
+
+        /* ==========================================================================
+           4. LỚP PHỦ TIỆN ÍCH (UTILITIES) & CHỮ GRADIENT
+           ========================================================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 7rem 0 3rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3.5rem;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--electric-blue) 50%, var(--purple-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--neon-blue), var(--purple-accent));
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--electric-blue), var(--purple-accent));
+            color: var(--text-white);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.6);
+            border-color: var(--neon-blue);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-white);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* ==========================================================================
+           5. NAVIGATION BAR (THANH MENU CỐ ĐỊNH)
+           ========================================================================== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            padding: 0.6rem 0;
+            background: rgba(5, 8, 22, 0.85);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo i {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--neon-blue), var(--purple-accent));
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .mobile-toggle span {
+            width: 30px;
+            height: 3px;
+            background: var(--text-white);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        /* ==========================================================================
+           TRANG 1: TRANG GIỚI THIỆU (ABOUT/HERO PAGE)
+           ========================================================================== */
+        .hero-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Chia đôi cân đối 50/50 */
+            gap: 4rem;
+            align-items: center;
+            min-height: calc(85vh - 70px);
+            padding-top: 40px;
+        }
+
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .learning-badge {
+            align-self: flex-start;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.15);
+        }
+
+        .learning-badge span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 rgba(0, 212, 255, 0); }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px rgba(0, 212, 255, 1); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* -----------------------------------------------------------------
+           BỐ CỤC MỚI: CYBER PROFILE CARD (KHỐI THÔNG TIN + AVATAR KHỔNG LỒ)
+           ----------------------------------------------------------------- */
+        .hero-right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .cyber-profile-card {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(135deg, rgba(8, 12, 36, 0.9) 0%, rgba(5, 8, 22, 0.95) 100%);
+            border: 1px solid var(--electric-blue);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(59, 130, 246, 0.25);
+            position: relative;
+            overflow: hidden;
+            animation: floatCard 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatCard {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-12px) rotate(0.5deg); }
+        }
+
+        /* Vòng phát sáng huyền ảo phía sau avatar */
+        .cyber-profile-card::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Khung Avatar khổng lồ hoành tráng (Đường kính 180px) */
+        .avatar-giant-frame {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            padding: 5px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--purple-accent));
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .avatar-giant-frame:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+        }
+
+        .avatar-giant-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: var(--bg-dark);
+        }
+
+        /* Đèn tín hiệu trạng thái ảo */
+        .status-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: #03050f;
+            border: 2px solid #27C93F;
+            color: #27C93F;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(39, 201, 63, 0.5);
+            animation: pulse-green 2s infinite alternate;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 2px rgba(39, 201, 63, 0.4); }
+            100% { box-shadow: 0 0 12px rgba(39, 201, 63, 0.8); }
+        }
+
+        /* Thông tin chữ dưới Avatar */
+        .card-student-info {
+            text-align: center;
+            z-index: 1;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .card-student-info h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            letter-spacing: 0.5px;
+        }
+
+        .card-student-info p {
+            font-size: 0.95rem;
+            color: var(--neon-blue);
+            font-family: monospace;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 3px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            width: fit-content;
+            margin: 4px auto 0 auto;
+        }
+
+        /* Khối Terminal nhỏ gọn phía dưới cùng của Card */
+        .card-terminal-console {
+            width: 100%;
+            background: rgba(5, 8, 22, 0.85);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            padding: 1.2rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            z-index: 1;
+        }
+
+        .console-row {
+            margin-bottom: 0.8rem;
+        }
+        .console-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .console-cmd {
+            color: var(--neon-blue);
+            margin-bottom: 2px;
+        }
+
+        .console-res {
+            color: var(--text-white);
+            padding-left: 0.8rem;
+            border-left: 2px solid rgba(139, 92, 246, 0.4);
+        }
+
+        /* ==========================================================================
+           TRANG GIỚI THIỆU BẢN THÂN CHI TIẾT
+           ========================================================================== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .about-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.2rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--neon-blue), var(--purple-accent));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .about-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .about-card:hover::before { opacity: 1; }
+
+        .about-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--neon-blue), var(--purple-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .about-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: var(--text-white);
+        }
+
+        .about-card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .about-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .about-list li {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-list li i { color: var(--neon-blue); }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin-top: 3rem;
+        }
+
+        .skill-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            backdrop-filter: blur(8px);
+            transition: var(--transition);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .skill-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .skill-icon-box i {
+            font-size: 1.4rem;
+            color: var(--purple-accent);
+            transition: var(--transition);
+        }
+
+        .skill-card:hover .skill-icon-box {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--neon-blue);
+        }
+
+        .skill-card:hover .skill-icon-box i {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .skill-name { font-size: 1.05rem; font-weight: 600; }
+        .progress-wrapper { margin-top: 1rem; }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--electric-blue), var(--neon-blue));
+            border-radius: 50px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.1, 0.8, 0.3, 1);
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: #fff;
+            filter: blur(2px);
+            opacity: 0.8;
+        }
+
+        /* ==========================================================================
+           TRANG 2: TRANG DỰ ÁN (PROJECTS & TIMELINE PAGE)
+           ========================================================================== */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 12px 30px rgba(0, 212, 255, 0.15), 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+
+        .project-thumbnail {
+            height: 190px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0d122f, #150f38);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-thumbnail i {
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .project-thumbnail-bg {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.12) 0%, transparent 70%);
+            transition: var(--transition);
+        }
+
+        .project-card:hover .project-thumbnail-bg {
+            transform: scale(1.15);
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, transparent 70%);
+        }
+
+        .project-card:hover .project-thumbnail i {
+            transform: scale(1.15) rotate(5deg);
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        .project-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(5, 8, 22, 0.85);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .project-content {
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex-grow: 1;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-white);
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+
+        .project-card:hover .project-title { color: var(--neon-blue); }
+        .project-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.6; flex-grow: 1; }
+        .project-footer { padding: 0 1.8rem 1.8rem 1.8rem; margin-top: auto; }
+
+        .project-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-white);
+            transition: var(--transition);
+        }
+
+        .project-btn:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .timeline-container {
+            max-width: 800px;
+            margin: 3rem auto 0 auto;
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--neon-blue) 0%, var(--purple-accent) 50%, var(--electric-blue) 100%);
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 1rem 2.5rem;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(even) { left: 50%; }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+
+        .timeline-dot {
+            width: 18px;
+            height: 18px;
+            background-color: var(--bg-dark);
+            border: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            position: absolute;
+            top: 1.5rem;
+            z-index: 2;
+            box-shadow: 0 0 12px var(--neon-blue);
+            transition: var(--transition);
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot { left: -9px; }
+        .timeline-item:nth-child(odd) .timeline-dot { right: -9px; }
+
+        .timeline-item:hover .timeline-dot {
+            background-color: var(--neon-blue);
+            scale: 1.3;
+            box-shadow: 0 0 18px var(--neon-blue);
+        }
+
+        .timeline-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .timeline-card:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .timeline-title { color: var(--neon-blue); font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+        .timeline-date { font-size: 0.8rem; color: var(--purple-accent); font-weight: 500; margin-bottom: 8px; }
+        .timeline-desc { font-size: 0.9rem; color: var(--text-gray); }
+
+        /* ==========================================================================
+           TRANG 3: TRANG TỔNG KẾT & LIÊN HỆ
+           ========================================================================== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(13, 20, 48, 0.5), rgba(5, 8, 22, 0.7));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--purple-accent);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+        }
+
+        .summary-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--purple-accent));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-icon i { color: var(--text-white); font-size: 1.5rem; }
+        .summary-card h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; }
+        .summary-card p { font-size: 0.95rem; color: var(--text-gray); line-height: 1.7; }
+
+        .contact-wrapper {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3.5rem;
+            backdrop-filter: blur(15px);
+            text-align: center;
+            max-width: 900px;
+            margin: 4rem auto 0 auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .contact-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .contact-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; }
+        .contact-subtitle { color: var(--text-gray); font-size: 1rem; max-width: 500px; margin: 0 auto 2.5rem auto; }
+        .contact-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+
+        .contact-link-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .contact-link-card i { font-size: 2rem; color: var(--neon-blue); transition: var(--transition); }
+        .contact-link-card span { font-size: 0.9rem; font-weight: 500; color: var(--text-white); }
+        .contact-link-card p { font-size: 0.8rem; color: var(--text-gray); }
+
+        .contact-link-card:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: var(--purple-accent);
+            transform: translateY(-5px);
+        }
+
+        .contact-link-card:hover i {
+            transform: scale(1.15);
+            color: var(--purple-accent);
+            text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
+        /* ==========================================================================
+           FOOTER (BẢN QUYỀN TRANG WEB)
+           ========================================================================== */
+        footer {
+            background: #03050f;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 2.5rem 0;
+            text-align: center;
+            position: relative;
+            margin-top: auto; /* Giữ footer luôn ở dưới đáy trang */
+        }
+
+        .footer-text { color: var(--text-gray); font-size: 0.9rem; }
+        .footer-text span { color: var(--neon-blue); }
+
+        /* ==========================================================================
+           PHÂN TÍCH THIẾT KẾ RESPONSIVE TRÊN CÁC THIẾT BỊ (RESPONSIVE CONFIG)
+           ========================================================================== */
+        @media (max-width: 992px) {
+            .hero-wrapper {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+                text-align: center;
+                min-height: auto;
+                padding-top: 40px;
+            }
+
+            .hero-left { align-items: center; }
+            .hero-title { font-size: 2.8rem; }
+            
+            .cyber-profile-card {
+                align-self: center;
+                max-width: 400px;
+            }
+
+            .timeline-container::before { left: 30px; }
+            .timeline-item {
+                width: 100%;
+                padding-left: 5rem;
+                padding-right: 1.5rem;
+                text-align: left !important;
+            }
+            .timeline-item:nth-child(even) { left: 0; }
+            .timeline-item .timeline-dot { left: 21px !important; right: auto !important; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                width: 250px;
+                height: calc(100vh - 70px);
+                background: rgba(5, 8, 22, 0.95);
+                border-left: 1px solid var(--glass-border);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 3rem;
+                gap: 2.5rem;
+                transition: 0.5s ease;
+            }
+
+            .nav-menu.open { right: 0; }
+            .mobile-toggle { display: flex; }
+
+            /* Trạng thái hoạt động của hamburger */
+            .mobile-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+            .mobile-toggle.open span:nth-child(2) { opacity: 0; }
+            .mobile-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+            .section { padding: 5rem 0 3rem 0; }
+            .section-title { font-size: 2rem; }
+            .hero-title { font-size: 2.2rem; }
+            .contact-wrapper { padding: 2rem 1.2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-actions { flex-direction: column; width: 100%; }
+            .hero-actions .btn { width: 100%; }
+            .projects-grid { grid-template-columns: 1fr; }
+            
+            .cyber-profile-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .avatar-giant-frame {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mạng lưới nền động kỹ thuật số -->
+    <div class="bg-grid-wrapper">
+        <div class="cyber-grid"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <!-- 1. NAVIGATION BAR (Chuyển trang SPA) -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <div class="logo" onclick="navigateToPage('giothieu')">
+                <i class="fa-solid fa-cube"></i> DIGITAL PORTFOLIO
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a class="nav-link active" onclick="navigateToPage('giothieu')"><i class="fa-solid fa-user"></i> Giới thiệu</a></li>
+                <li><a class="nav-link" onclick="navigateToPage('duan')"><i class="fa-solid fa-code-branch"></i> Dự án</a></li>
+                <li><a class="nav-link" onclick="navigateToPage('tongket')"><i class="fa-solid fa-award"></i> Tổng kết</a></li>
+            </ul>
+
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       TRANG 1: GIỚI THIỆU (ID: page-giothieu)
+       ========================================================================== */ -->
+    <div id="page-giothieu" class="page active">
+        <!-- Hero Element -->
+        <section class="section container">
+            <div class="hero-wrapper">
+                <!-- Cột bên trái: Lời chào và Hành động -->
+                <div class="hero-left">
+                    <div class="learning-badge">
+                        <span></span> PORTFOLIO HỌC TẬP
+                    </div>
+                    <h1 class="hero-title">
+                        Xin chào, tôi là <br>
+                        <span class="gradient-text">Đăng</span>
+                    </h1>
+                    <h2 style="font-size: 1.4rem; font-weight: 500; color: var(--neon-blue);">
+                        Sinh viên ngành Công nghệ Thông Tin
+                    </h2>
+                    <p class="hero-description">
+                        Portfolio này được xây dựng nhằm tổng hợp toàn bộ kiến thức, kỹ năng và sản phẩm đã thực hiện trong môn Nhập môn Công nghệ số và Ứng dụng Trí tuệ nhân tạo.
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <button onclick="navigateToPage('duan')" class="btn btn-primary"><i class="fa-solid fa-code"></i> Xem dự án</button>
+                        <button onclick="navigateToPage('tongket')" class="btn btn-secondary"><i class="fa-solid fa-award"></i> Xem tổng kết</button>
+                    </div>
+                </div>
+
+                <!-- Cột bên phải: Cyber Profile Card hoành tráng (Gộp chung Avatar to và Terminal) -->
+                <div class="hero-right">
+                    <div class="cyber-profile-card">
+                        
+                        <!-- Khung hình đại diện khổng lồ 180px -->
+                        <div class="avatar-giant-frame">
+                            <!-- NƠI THAY THẾ ẢNH ĐẠI DIỆN: Sửa "avatar.jpg" thành tên tệp ảnh của bạn -->
+                            <img src="avatar.jpg" alt="Avatar" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\'fa-solid fa-user-astronaut\' style=\'font-size: 4rem; color: #fff;\'></i>'">
+                            <!-- Đèn tín hiệu trực tuyến ảo -->
+                            <span class="status-badge">● ONLINE</span>
+                        </div>
+
+                        <!-- Thông tin tóm tắt cá nhân -->
+                        <div class="card-student-info">
+                            <!-- SỬA HỌ TÊN VÀ MSSV TẠI ĐÂY -->
+                            <h4>Trần Văn Hải Đăng</h4>
+                            <p>MSSV: 25020120</p>
+                        </div>
+
+                        <!-- Terminal giả lập bên dưới -->
+                        <div class="card-terminal-console">
+                            <div class="console-row">
+                                <div class="console-cmd">> whoami</div>
+                                <div class="console-res">Sinh viên CNTT</div>
+                            </div>
+                            <div class="console-row">
+                                <div class="console-cmd">> focus</div>
+                                <div class="console-res">Web Development • AI • Digital Skills</div>
+                            </div>
+                            <div class="console-row">
+                                <div class="console-cmd">> status</div>
+                                <div class="console-res">Learning & Building Projects</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Giới thiệu bản thân chi tiết -->
+        <section class="section container">
+            <h2 class="section-title">Thông Tin Bản Thân</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon"><i class="fa-solid fa-address-card"></i></div>
+                    <h3>Hồ Sơ Cá Nhân</h3>
+                    <ul class="about-list">
+                        <li><i class="fa-solid fa-chevron-right"></i> <strong>Họ tên:</strong> Trần Văn Hải Đnagư</li>
+                        <li><i class="fa-solid fa-chevron-right"></i> <strong>Ngành học:</strong> Công nghệ Thông Tin</li>
+                        <li><i class="fa-solid fa-chevron-right"></i> <strong>Sở thích:</strong> Lập trình, Bóng đá</li>
+                        <li><i class="fa-solid fa-chevron-right"></i> <strong>Định hướng:</strong> Kỹ sư an ninh mạng</li>
+                    </ul>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>Mục Tiêu Portfolio</h3>
+                    <ul class="about-list">
+                        <li><i class="fa-solid fa-check-double"></i> Thể hiện kỹ năng số đã học được qua thực tiễn</li>
+                        <li><i class="fa-solid fa-check-double"></i> Lưu trữ một cách hệ thống các sản phẩm học tập</li>
+                        <li><i class="fa-solid fa-check-double"></i> Chia sẻ thành quả học tập chuyên nghiệp tới bạn bè & thầy cô</li>
+                    </ul>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Định Hướng Phát Triển</h3>
+                    <p>
+                        Tập trung xây dựng nền tảng vững chắc về lập trình và cấu trúc dữ liệu, đồng thời đào sâu vào lĩnh vực An ninh mạng. Mục tiêu hướng tới việc nghiên cứu các cơ chế bảo mật, ứng dụng AI trong phòng thủ hệ thống và hoàn thiện kỹ năng phát triển phần mềm thực tế trong các học kỳ tiếp theo
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kỹ năng đạt được -->
+        <section class="section container">
+            <h2 class="section-title">Kỹ Năng Đạt Được</h2>
+            <div class="skills-grid">
+                <!-- Skill 1 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-file-invoice"></i></div>
+                        <span class="skill-name">Tin học văn phòng</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Sử dụng thực tế</span><span>90%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="90%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 2 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                        <span class="skill-name">Tìm kiếm & Khai thác thông tin</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Mức độ thông thạo</span><span>85%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="85%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 3 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-brain"></i></div>
+                        <span class="skill-name">Trí tuệ nhân tạo (AI)</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Ứng dụng công cụ AI</span><span>80%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="80%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 4 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-users"></i></div>
+                        <span class="skill-name">Làm việc nhóm</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Phối hợp dự án</span><span>85%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="85%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 5 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-display"></i></div>
+                        <span class="skill-name">Thuyết trình & Báo cáo</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Mức độ tự tin</span><span>75%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="75%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 6 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-photo-film"></i></div>
+                        <span class="skill-name">Thiết kế nội dung số</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Canva, Figma, Video</span><span>80%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="80%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 7 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-code"></i></div>
+                        <span class="skill-name">HTML / CSS cơ bản</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Xây dựng giao diện</span><span>70%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="70%"></div></div>
+                    </div>
+                </div>
+                <!-- Skill 8 -->
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-icon-box"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <span class="skill-name">Công nghệ số tương lai</span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div class="progress-info"><span>Thích ứng ứng dụng</span><span>85%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" data-progress="85%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ==========================================================================
+       TRANG 2: DANH SÁCH DỰ ÁN & LỘ TRÌNH (ID: page-duan)
+       ========================================================================== */ -->
+    <div id="page-duan" class="page">
+        <!-- Danh mục dự án chính -->
+        <section class="section container">
+            <h2 class="section-title">Dự Án Học Tập</h2>
+            <div class="projects-grid">
+                <!-- Bài 1 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-laptop-code"></i>
+                        <span class="project-badge">Bài 1</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Máy tính và thiết bị ngoại vi</h3>
+                        <p class="project-desc">Tìm hiểu cấu trúc máy tính, phân loại linh kiện phần cứng cùng cách thức giao tiếp và thiết lập phần cứng ngoại vi tối ưu.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap1.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bài 2 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-filter"></i>
+                        <span class="project-badge">Bài 2</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Khai thác dữ liệu và thông tin</h3>
+                        <p class="project-desc">Phương pháp khai thác thông tin từ môi trường mạng, cách truy vấn, chọn lọc dữ liệu đáng tin cậy phục vụ nghiên cứu khoa học.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap2.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bài 3 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-microchip"></i>
+                        <span class="project-badge">Bài 3</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Ứng dụng AI trong học tập</h3>
+                        <p class="project-desc">Sử dụng AI để giải quyết những bài khó trong môn giải tích I.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap3.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bài 4 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-network-wired"></i>
+                        <span class="project-badge">Bài 4</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Giao tiếp & Hợp tác trên môi trường số</h3>
+                        <p class="project-desc">Khai thác các hệ thống quản trị, họp trực tuyến, lưu trữ đám mây và kỹ năng tương tác chuyên nghiệp trên không gian mạng.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap4.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bài 5 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-palette"></i>
+                        <span class="project-badge">Bài 5</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Sáng tạo nội dung số</h3>
+                        <p class="project-desc">Phát triển tư duy thiết kế, thực hiện biên tập văn bản, biên tập hình ảnh và xây dựng các sản phẩm truyền thông số cơ bản.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap5.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bài 6 -->
+                <div class="project-card">
+                    <div class="project-thumbnail">
+                        <div class="project-thumbnail-bg"></div>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span class="project-badge">Bài 6</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">An toàn và Liêm chính học thuật</h3>
+                        <p class="project-desc">Xác định các mối nguy bảo mật mạng, biện pháp phòng chống mã độc và tuân thủ các quy tắc liêm chính học thuật thời đại số.</p>
+                    </div>
+                    <div class="project-footer">
+                        <a href="baitap6.pdf" class="project-btn" target="_blank">
+                            <span>Xem chi tiết bài tập</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Lộ trình dọc -->
+        <section class="section container">
+            <h2 class="section-title">Lộ Trình Học Tập</h2>
+            <div class="timeline-container">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 1: Khởi Đầu Hành Trình Số</div>
+                        <div class="timeline-date">Tuần 1 - Hoàn thành</div>
+                        <p class="timeline-desc">Thấu hiểu nguyên lý cấu trúc máy tính, nhận biết các thành phần phần cứng và cài đặt công cụ cần thiết.</p>
+                    </div>
+                </div>
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 2: Làm Chủ Dữ Liệu</div>
+                        <div class="timeline-date">Tuần 2 - Hoàn thành</div>
+                        <p class="timeline-desc">Làm quen với các công cụ tra cứu thông tin chuyên sâu và xây dựng tư duy chắt lọc nguồn học liệu uy tín.</p>
+                    </div>
+                </div>
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 3: Tiếp Cận Công Nghệ AI</div>
+                        <div class="timeline-date">Tuần 3 - Hoàn thành</div>
+                        <p class="timeline-desc">Thực hành viết Prompt, sử dụng AI tạo sinh (ChatGPT, Gemini) để hỗ trợ phân tích dữ liệu và tối ưu hóa thời gian học tập.</p>
+                    </div>
+                </div>
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 4: Hợp Tác Không Biên Giới</div>
+                        <div class="timeline-date">Tuần 4 - Hoàn thành</div>
+                        <p class="timeline-desc">Làm việc nhóm trực tuyến hiệu quả, ứng dụng sơ đồ tư duy tương tác và hoàn thiện cấu trúc giao tiếp số.</p>
+                    </div>
+                </div>
+                <!-- Timeline Item 5 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 5: Sáng Tạo Ấn Phẩm Số</div>
+                        <div class="timeline-date">Tuần 5 - Hoàn thành</div>
+                        <p class="timeline-desc">Thiết kế đồ họa truyền thông và viết nội dung, xây dựng cấu trúc của Website Portfolio cá nhân này.</p>
+                    </div>
+                </div>
+                <!-- Timeline Item 6 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-title">Bài 6: Vững Vàng Trên Không Gian Số</div>
+                        <div class="timeline-date">Tuần 6 - Hoàn thành</div>
+                        <p class="timeline-desc">Tự trang bị giải pháp bảo mật dữ liệu, tôn trọng bản quyền sở hữu trí tuệ và chống đạo văn tuyệt đối.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ==========================================================================
+       TRANG 3: TỔNG KẾT & LIÊN HỆ (ID: page-tongket)
+       ========================================================================== */ -->
+    <div id="page-tongket" class="page">
+        <!-- Tổng kết học phần -->
+        <section class="section container">
+            <h2 class="section-title">Tổng Kết Học Phần</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fa-solid fa-star"></i></div>
+                    <h3>Trải Nghiệm Môn Học</h3>
+                    <p>
+                        Trải nghiệm thực tế vô cùng phong phú, từ việc tương tác với các hệ sinh thái công cụ hỗ trợ của trường học cho đến việc ứng dụng tư duy thiết kế bài bản.
+                    </p>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3>Kiến Thức Đạt Được</h3>
+                    <p>
+                        Hiểu rõ nguyên lý hoạt động của thế giới số, nắm bắt kỹ năng thúc đẩy hiệu suất nhờ AI, cách làm việc đội nhóm đa nền tảng và tư duy về bảo mật thông tin.
+                    </p>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h3>Thách Thức & Bài Học</h3>
+                    <p>
+                        Ban đầu gặp khó khăn khi học cách phân biệt thông tin giả và quản trị thời gian khi làm việc nhóm trực tuyến. Bài học rút ra là tính chủ động và tính kỷ luật cực kỳ quan trọng.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Khối liên hệ -->
+        <section class="section container">
+            <div class="contact-wrapper">
+                <h3 class="contact-title gradient-text">Kết Nối Với Tôi</h3>
+                <p class="contact-subtitle">Nếu bạn muốn trao đổi thêm về học tập hay dự án công nghệ, hãy liên lạc với tôi qua các kênh dưới đây!</p>
+                
+                <div class="contact-links">
+                    <a href="https://mail.google.com" class="contact-link-card">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>Email</span>
+                        <p>tdang20022007@gmail.com</p>
+                    </a>
+                    <a href="https://www.facebook.com/share/1Cwi1eZMGo/" target="_blank" class="contact-link-card">
+                        <i class="fa-brands fa-facebook"></i>
+                        <span>Facebook</span>
+                        <p>fb.com/TranDang</p>
+                    </a>
+                </div>
+
+                <p style="font-size: 0.9rem; color: var(--text-gray);">
+                    Học phần: Nhập môn Công nghệ số và Ứng dụng Trí tuệ nhân tạo
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- 9. FOOTER CHUNG -->
+    <footer>
+        <div class="container">
+            <p class="footer-text">
+                &copy; 2025 - 2026 <span>Digital Portfolio</span> | Được thiết kế hoàn chỉnh bằng HTML5, CSS3 & JavaScript thuần
+            </p>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+       SCRIPT ĐIỀU KHIỂN ĐỊNH TUYẾN TRANG (ROUTING) & HOẠT ẢNH
+       ========================================================================== -->
+    <script>
+        // Hàm chuyển đổi giữa các trang (SPA Routing)
+        function navigateToPage(pageId) {
+            // 1. Tìm tất cả các thẻ trang (.page)
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active'); // Ẩn tất cả các trang
+            });
+
+            // 2. Kích hoạt trang đích tương ứng
+            const activePage = document.getElementById('page-' + pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+                
+                // Cuộn mượt lên trên cùng khi đổi trang
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+
+                // Kích hoạt lại animation kỹ năng nếu chuyển sang trang giới thiệu
+                if (pageId === 'giothieu') {
+                    animateSkills();
+                }
+            }
+
+            // 3. Cập nhật trạng thái active trên Navigation Menu
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                // So sánh thuộc tính onclick để tìm link tương ứng
+                if (link.getAttribute('onclick').includes(pageId)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Đóng menu trên mobile tự động sau khi click chuyển trang
+            const mobileToggle = document.getElementById("mobileToggle");
+            const navMenu = document.getElementById("navMenu");
+            if (mobileToggle && navMenu) {
+                mobileToggle.classList.remove("open");
+                navMenu.classList.remove("open");
+            }
+        }
+
+        // Hàm hiệu ứng chạy thanh kỹ năng
+        function animateSkills() {
+            const skillFills = document.querySelectorAll(".progress-bar-fill");
+            skillFills.forEach(fill => {
+                // Đặt lại 0% trước khi chạy để tạo hiệu ứng chuyển động mượt mỗi lần chuyển trang
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    const percent = fill.getAttribute("data-progress");
+                    fill.style.width = percent;
+                }, 100);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. THANH NAVBAR ĐỔI TRẠNG THÁI KHI SCROLL KHỎI ĐẦU TRANG
+            const navbar = document.getElementById("navbar");
+            window.addEventListener("scroll", () => {
+                if (window.scrollY > 30) {
+                    navbar.classList.add("scrolled");
+                } else {
+                    navbar.classList.remove("scrolled");
+                }
+            });
+
+            // 2. BẬT TẮT MOBILE MENU HAMBURGER
+            const mobileToggle = document.getElementById("mobileToggle");
+            const navMenu = document.getElementById("navMenu");
+            
+            if (mobileToggle && navMenu) {
+                mobileToggle.addEventListener("click", () => {
+                    mobileToggle.classList.toggle("open");
+                    navMenu.classList.toggle("open");
+                });
+            }
+
+            // 3. Kích hoạt chạy hiệu ứng kỹ năng ngay ở trang giới thiệu đầu tiên
+            animateSkills();
+        });
+    </script>
+</body>
+</html>
